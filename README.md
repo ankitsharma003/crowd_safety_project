@@ -23,6 +23,7 @@ A real-time crowd flow analysis and safety guidance system that detects movement
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.8 or higher
 - 4GB+ RAM (for model files)
 - Web browser
@@ -30,38 +31,44 @@ A real-time crowd flow analysis and safety guidance system that detects movement
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/ankitsharma003/crowd_safety_project.git
 cd crowd_safety_project
 ```
 
 2. **Install dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. **Run the application**
+
 ```bash
 python app.py
 ```
 
 4. **Open your browser**
-Navigate to `http://localhost:5000`
+   Navigate to `http://localhost:5000`
 
 ## 📊 How It Works
 
 ### 1. Flow Detection Pipeline
+
 ```
 Input Images → Frame Differencing → Gradient Analysis → Flow Estimation → Direction Analysis
 ```
 
 ### 2. Movement Analysis
+
 - **Phase Correlation**: Detects global shifts between frames
 - **Gradient Analysis**: Identifies local movement patterns
 - **Confidence Scoring**: Validates detection reliability
 - **Fallback Mechanisms**: Ensures robust operation
 
 ### 3. Safety Guidance
+
 - **Zone Detection**: Identifies current location in venue
 - **Exit Optimization**: Finds nearest safe exit
 - **Bottleneck Avoidance**: Suggests alternative routes
@@ -70,17 +77,20 @@ Input Images → Frame Differencing → Gradient Analysis → Flow Estimation �
 ## 🖥️ Web Interface
 
 ### Upload Images
+
 - Upload multiple consecutive frames
 - Supports common image formats (PNG, JPG, TIFF)
 - Real-time processing and analysis
 
 ### Visualization
+
 - **Flow Arrows**: Red arrows showing movement direction
 - **Confidence Indicators**: Color-coded confidence levels
 - **Zone Mapping**: Current location and exit information
 - **Bottleneck Alerts**: Warning indicators for congested areas
 
 ### Guidance Cards
+
 - **Frame-by-frame Analysis**: Detailed information for each frame
 - **Movement Recommendations**: Directional guidance
 - **Exit Instructions**: Step-by-step evacuation guidance
@@ -108,14 +118,18 @@ crowd_safety_project/
 ## 🔧 Configuration
 
 ### Venue Setup
+
 Edit `venue_config.py` to configure your venue:
+
 - Exit locations
 - Zone definitions
 - Safety parameters
 - Layout specifications
 
 ### Detection Parameters
+
 Adjust sensitivity in the web interface:
+
 - **Density Threshold**: Crowd density sensitivity
 - **Movement Threshold**: Motion detection sensitivity
 - **Alpha Parameter**: Flow smoothing factor
@@ -123,12 +137,14 @@ Adjust sensitivity in the web interface:
 ## 📈 Performance
 
 ### System Requirements
+
 - **CPU**: Multi-core processor recommended
 - **RAM**: 4GB+ (model files are ~14MB)
 - **Storage**: 100MB+ for application and models
 - **Network**: Stable internet for web interface
 
 ### Optimization Tips
+
 - Use smaller image sizes for faster processing
 - Adjust detection thresholds based on venue
 - Monitor memory usage with large datasets
@@ -137,17 +153,20 @@ Adjust sensitivity in the web interface:
 ## 🛠️ Development
 
 ### Running Tests
+
 ```bash
 python -m pytest tests/
 ```
 
 ### Code Structure
+
 - **Modular Design**: Separate concerns for flow, guidance, and visualization
 - **Error Handling**: Robust error handling and fallback mechanisms
 - **Performance**: Optimized algorithms for real-time processing
 - **Extensibility**: Easy to add new detection methods
 
 ### Adding New Features
+
 1. **New Detection Methods**: Add to `flow_estimation.py`
 2. **Guidance Algorithms**: Extend `movement_instruction.py`
 3. **Visualization**: Modify `visualization.py`
@@ -156,9 +175,11 @@ python -m pytest tests/
 ## 🚀 Deployment
 
 ### Production Deployment
+
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ### Quick Production Setup
+
 ```bash
 # Install production server
 pip install gunicorn
@@ -168,6 +189,7 @@ gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
 ### Docker Deployment
+
 ```bash
 # Build image
 docker build -t crowd-safety .
@@ -179,6 +201,7 @@ docker run -p 5000:5000 crowd-safety
 ## 📊 Model Files
 
 The system uses pre-trained models:
+
 - `autoencoder_weights.pkl` - Neural network weights
 - `pca_results.pkl` - Dimensionality reduction
 - `spatiotemporal_matrix.pkl` - Spatiotemporal patterns
@@ -206,6 +229,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For questions, issues, or contributions:
+
 - **Issues**: [GitHub Issues](https://github.com/ankitsharma003/crowd_safety_project/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/ankitsharma003/crowd_safety_project/discussions)
 
