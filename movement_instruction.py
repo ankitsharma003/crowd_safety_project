@@ -106,11 +106,29 @@ def generate_instruction_details(images, flows, bottlenecks, alpha: float = 0.75
         dx = shifts[i-1]['dx'] if (i-1) < len(shifts) else 0.0
         dy = shifts[i-1]['dy'] if (i-1) < len(shifts) else 0.0
         mag = math.hypot(dx, dy)
-        CONF_MIN = 0.25
-        MAG_MIN = 0.5
+        CONF_MIN = 0.1  # Lowered threshold for better detection
+        MAG_MIN = 0.1   # Lowered threshold for better detection
+        
+        # Fallback to simple flow analysis if phase correlation fails
         if conf < CONF_MIN or mag < MAG_MIN:
-            flow_text = 'No movement detected'
-            cardinal = 'None'
+            # Try simple flow analysis as fallback
+            flow_simple = dominant_direction(flow)
+            if "No movement detected" not in flow_simple:
+                flow_text = flow_simple
+                # Extract direction from flow_simple
+                if "right" in flow_simple.lower():
+                    cardinal = "East"
+                elif "left" in flow_simple.lower():
+                    cardinal = "West"
+                elif "down" in flow_simple.lower():
+                    cardinal = "South"
+                elif "up" in flow_simple.lower():
+                    cardinal = "North"
+                else:
+                    cardinal = "None"
+            else:
+                flow_text = 'No movement detected'
+                cardinal = 'None'
         else:
             if abs(dx) > abs(dy):
                 flow_text = 'Suggest moving right (East)' if dx > 0 else 'Suggest moving left (West)'

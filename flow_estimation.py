@@ -16,11 +16,24 @@ def load_images(folder, size=(64, 64), max_frames=20):
     return images
 
 def estimate_flow(images):
-    # Simple frame differencing to estimate movement
+    # Enhanced flow estimation using optical flow-like approach
     flows = []
     for i in range(1, len(images)):
-        flow = images[i] - images[i-1]
-        flows.append(flow)
+        # Calculate frame difference
+        diff = images[i] - images[i-1]
+        
+        # Calculate gradients for better flow estimation
+        grad_x = np.gradient(diff, axis=1)
+        grad_y = np.gradient(diff, axis=0)
+        
+        # Create flow field with magnitude and direction
+        flow_magnitude = np.sqrt(grad_x**2 + grad_y**2)
+        
+        # Apply threshold to reduce noise
+        threshold = np.percentile(flow_magnitude, 80)  # Keep top 20% of flow
+        flow_magnitude = np.where(flow_magnitude > threshold, flow_magnitude, 0)
+        
+        flows.append(flow_magnitude)
     return flows
 
 def estimate_global_shift(prev: np.ndarray, curr: np.ndarray) -> tuple:
@@ -109,14 +122,21 @@ def dominant_direction_from_pair(prev: np.ndarray, curr: np.ndarray) -> str:
         return "Suggest moving down (South)" if dy > 0 else "Suggest moving up (North)"
 
 def dominant_direction(flow):
-    # Compute average movement in x and y
+    # Compute average movement in x and y using flow magnitude
     h, w = flow.shape
     y_indices, x_indices = np.mgrid[0:h, 0:w]
     total = np.sum(flow)
-    if total == 0:
+    if total < 1e-6:  # Very small threshold for numerical stability
         return "No movement detected"
+    
+    # Calculate weighted centroid of flow
     x_flow = np.sum(flow * x_indices) / total - w/2
     y_flow = np.sum(flow * y_indices) / total - h/2
+    
+    # Use smaller thresholds for movement detection
+    if abs(x_flow) < 0.1 and abs(y_flow) < 0.1:
+        return "No movement detected"
+    
     if abs(x_flow) > abs(y_flow):
         if x_flow > 0:
             return "Suggest moving right (East)"

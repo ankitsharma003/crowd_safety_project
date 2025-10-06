@@ -72,31 +72,41 @@ def reconstruction_error(vec, recon):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     def draw_flow_arrow(img, flow):
-        # Overlay small arrow grid on top of the frame for clarity
+        # Overlay flow arrows on the frame for better visualization
         base = img.convert('RGB').resize((128,128))
         draw = ImageDraw.Draw(base)
-        h, w = 64, 64
+        h, w = flow.shape
         flow_np = np.array(flow)
-        # sample a 8x8 grid
-        step = 8
-        scale = 6
-        for gy in range(0, h, step):
-            for gx in range(0, w, step):
-                # local vector approximation from flow magnitude gradient
-                # use simple difference with neighbors if available
-                vx = 0.0
-                vy = 0.0
-                if gx+1 < w:
-                    vx += flow_np[gy, gx+1] - flow_np[gy, gx]
-                if gy+1 < h:
-                    vy += flow_np[gy+1, gx] - flow_np[gy, gx]
-                if abs(vx) + abs(vy) < 1e-3:
-                    continue
-                sx = int((gx+0.5) * 2)
-                sy = int((gy+0.5) * 2)
-                ex = int(sx + scale * np.clip(vx, -1, 1))
-                ey = int(sy + scale * np.clip(vy, -1, 1))
-                draw.line([sx, sy, ex, ey], fill=(255,0,0), width=2)
+        
+        # Calculate overall flow direction
+        y_indices, x_indices = np.mgrid[0:h, 0:w]
+        total = np.sum(flow_np)
+        if total > 1e-6:
+            x_flow = np.sum(flow_np * x_indices) / total - w/2
+            y_flow = np.sum(flow_np * y_indices) / total - h/2
+            
+            # Scale for visualization
+            scale = 20
+            center_x, center_y = 64, 64  # Center of 128x128 image
+            end_x = int(center_x + scale * x_flow)
+            end_y = int(center_y + scale * y_flow)
+            
+            # Draw main flow arrow
+            if abs(x_flow) > 0.1 or abs(y_flow) > 0.1:
+                draw.line([center_x, center_y, end_x, end_y], fill=(255,0,0), width=3)
+                # Draw arrowhead
+                arrow_size = 5
+                if abs(x_flow) > abs(y_flow):
+                    if x_flow > 0:  # Right
+                        draw.polygon([(end_x, end_y), (end_x-arrow_size, end_y-arrow_size), (end_x-arrow_size, end_y+arrow_size)], fill=(255,0,0))
+                    else:  # Left
+                        draw.polygon([(end_x, end_y), (end_x+arrow_size, end_y-arrow_size), (end_x+arrow_size, end_y+arrow_size)], fill=(255,0,0))
+                else:
+                    if y_flow > 0:  # Down
+                        draw.polygon([(end_x, end_y), (end_x-arrow_size, end_y-arrow_size), (end_x+arrow_size, end_y-arrow_size)], fill=(255,0,0))
+                    else:  # Up
+                        draw.polygon([(end_x, end_y), (end_x-arrow_size, end_y+arrow_size), (end_x+arrow_size, end_y+arrow_size)], fill=(255,0,0))
+        
         return base
     result_html = ''
     error_html = ''
